@@ -44,12 +44,13 @@ public class UserService {
             throw new UserDoesNotExistException(String.format("The user with id '%s' does not exist", id));
         }
 
-        return modelMapper.map(userResult, UserDTO.class);
+        User user = userResult.get();
+
+        return modelMapper.map(user, UserDTO.class);
     }
 
     public List<UserDTO> fetchAllUsers() {
         List<User> userList = userRepository.findAll();
-
         List<UserDTO> userDTOList = new ArrayList<>();
 
         userList.forEach(user -> userDTOList.add(modelMapper.map(user, UserDTO.class)));

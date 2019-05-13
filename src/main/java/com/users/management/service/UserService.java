@@ -71,8 +71,8 @@ public class UserService {
             throw new EmailAlreadyUsedException(String.format("User with email '%s' already exists.", userDTO.getEmailAddress()));
         }
 
-       User updatedUser = modelMapper.map(userDTO, User.class);
-
+        User updatedUser = modelMapper.map(userDTO, User.class);
+        userRepository.save(updatedUser);
 
         return userDTO;
     }

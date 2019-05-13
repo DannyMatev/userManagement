@@ -45,10 +45,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
         List<ErrorDTO> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(new ErrorDTO(error.getDefaultMessage()));
+            errors.add(new ErrorDTO(String.format("%s, %s", error.getField(), error.getDefaultMessage())));
         }
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(new ErrorDTO(error.getDefaultMessage()));
+            errors.add(new ErrorDTO(String.format("%s, %s", error.getObjectName(), error.getDefaultMessage())));
         }
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

@@ -28,7 +28,6 @@ public class UserDTO {
     @NotBlank
     private String lastName;
 
-    @Email(message = "Email is not in a correct format.")
     @NotBlank
     private String emailAddress;
 
@@ -36,7 +35,6 @@ public class UserDTO {
     @JsonFormat(pattern = "dd-MM-yyyy")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @Past
     private LocalDate dateOfBirth;
 
     public UserDTO() {

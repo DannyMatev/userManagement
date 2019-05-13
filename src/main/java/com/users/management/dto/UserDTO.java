@@ -27,7 +27,7 @@ public class UserDTO {
     @NotBlank
     private String lastName;
 
-    @Email
+    @Email(message = "Email is not in a correct format.")
     @NotBlank
     private String emailAddress;
 

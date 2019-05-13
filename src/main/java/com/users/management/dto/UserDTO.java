@@ -2,14 +2,17 @@ package com.users.management.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.Example;
 import io.swagger.annotations.ExampleProperty;
 import org.springframework.format.annotation.DateTimeFormat;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -20,6 +23,7 @@ import java.util.Objects;
 
 public class UserDTO {
 
+    @JsonIgnore
     private String id;
 
     @NotBlank
@@ -40,6 +44,7 @@ public class UserDTO {
     public UserDTO() {
     }
 
+    @JsonProperty
     public String getId() {
         return id;
     }

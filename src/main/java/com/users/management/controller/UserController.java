@@ -5,6 +5,7 @@ import com.users.management.exception.EmailAlreadyUsedException;
 import com.users.management.exception.UserDoesNotExistException;
 import com.users.management.model.User;
 import com.users.management.service.UserService;
+import io.swagger.annotations.ApiModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

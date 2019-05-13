@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/user/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<UserDTO> editUser(@PathVariable String id, @RequestBody UserDTO userDTO) throws UserDoesNotExistException, EmailAlreadyUsedException {
+    public ResponseEntity<UserDTO> editUser(@PathVariable String id, @RequestBody @Valid UserDTO userDTO) throws UserDoesNotExistException, EmailAlreadyUsedException {
         return ResponseEntity.ok(userService.editUser(id, userDTO));
     }
 

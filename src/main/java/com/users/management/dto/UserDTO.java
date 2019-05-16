@@ -33,6 +33,7 @@ public class UserDTO {
     private String lastName;
 
     @NotBlank
+    @Email
     private String emailAddress;
 
     @NotNull

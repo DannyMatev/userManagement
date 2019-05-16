@@ -35,8 +35,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ErrorDTO duplicateKey(DuplicateKeyException exception) {
         String indexName = exception.getMessage().split("(.*index: )|( dup.*)")[1];
 
-
-
         return new ErrorDTO(String.format("%s must be unique", indexName));
     }
 
@@ -47,9 +45,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus status,
             WebRequest request) {
         List<ErrorDTO> errors = new ArrayList<>();
+
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(new ErrorDTO(String.format("%s, %s", error.getField(), error.getDefaultMessage())));
         }
+
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
             errors.add(new ErrorDTO(String.format("%s, %s", error.getObjectName(), error.getDefaultMessage())));
         }

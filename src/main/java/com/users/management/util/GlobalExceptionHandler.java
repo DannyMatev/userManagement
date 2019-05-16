@@ -1,8 +1,8 @@
 package com.users.management.util;
 
 import com.users.management.dto.ErrorDTO;
-import com.users.management.exception.EmailAlreadyUsedException;
 import com.users.management.exception.UserDoesNotExistException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +29,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ErrorDTO(exception.getMessage());
     }
 
-    @ExceptionHandler(EmailAlreadyUsedException.class)
+    @ExceptionHandler(DuplicateKeyException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDTO emailAlreadyUsed(EmailAlreadyUsedException exception) {
-        return new ErrorDTO(exception.getMessage());
+    public ErrorDTO duplicateKey(DuplicateKeyException exception) {
+        String indexName = exception.getMessage().split("(.*index: )|( dup.*)")[1];
+
+
+
+        return new ErrorDTO(String.format("%s must be unique", indexName));
     }
 
     @Override

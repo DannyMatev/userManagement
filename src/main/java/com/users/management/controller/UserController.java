@@ -1,11 +1,10 @@
 package com.users.management.controller;
 
 import com.users.management.dto.UserDTO;
-import com.users.management.exception.EmailAlreadyUsedException;
 import com.users.management.exception.UserDoesNotExistException;
 import com.users.management.model.User;
 import com.users.management.service.UserService;
-import io.swagger.annotations.ApiModel;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,18 +20,22 @@ public class UserController {
 
     private UserService userService;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ModelMapper modelMapper) {
         this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping(value = "/user", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO) throws EmailAlreadyUsedException {
-        User user = userService.createUser(userDTO);
+    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        User createdUser = userService.createUser(user);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("user/{id}")
-                .buildAndExpand(user.getId())
+                .buildAndExpand(createdUser.getId())
                 .toUri();
 
         return ResponseEntity.created(uri).build();
@@ -39,21 +43,29 @@ public class UserController {
 
     @GetMapping(value = "/user/{id}", produces = "application/json")
     public  ResponseEntity<UserDTO> fetchUser(@PathVariable String id) throws UserDoesNotExistException {
-        UserDTO user = userService.fetchUserById(id);
+        User user = userService.fetchUserById(id);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping(value = "/user", produces = "application/json")
     public  ResponseEntity<List<UserDTO>> fetchAllUsers() {
-        List<UserDTO> userList = userService.fetchAllUsers();
+        List<User> userList = userService.fetchAllUsers();
+        List<UserDTO> userDTOList = new ArrayList<>();
 
-        return ResponseEntity.ok(userList);
+        userList.forEach(user -> userDTOList.add(modelMapper.map(user, UserDTO.class)));
+
+        return ResponseEntity.ok(userDTOList);
     }
 
     @PutMapping(value = "/user/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<UserDTO> editUser(@PathVariable String id, @RequestBody @Valid UserDTO userDTO) throws UserDoesNotExistException, EmailAlreadyUsedException {
-        return ResponseEntity.ok(userService.editUser(id, userDTO));
+    public ResponseEntity<UserDTO> editUser(@PathVariable String id, @RequestBody @Valid UserDTO userDTO) throws UserDoesNotExistException {
+        User user = modelMapper.map(userDTO, User.class);
+        User editedUser = userService.editUser(id, user);
+        UserDTO editedUserDTO = modelMapper.map(editedUser, UserDTO.class);
+
+        return ResponseEntity.ok(editedUserDTO);
     }
 
     @DeleteMapping(value = "/user/{id}", produces = "application/json")

@@ -1,10 +1,13 @@
 package com.users.management.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Document
 public class User {
 
     @Id
@@ -14,6 +17,7 @@ public class User {
 
     private String lastName;
 
+    @Indexed(unique=true)
     private String emailAddress;
 
     private LocalDate dateOfBirth;

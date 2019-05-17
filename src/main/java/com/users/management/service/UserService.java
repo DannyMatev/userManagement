@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -24,13 +23,8 @@ public class UserService {
     }
 
     public User fetchUserById(String id) throws UserDoesNotExistException {
-        Optional<User> userResult = userRepository.findById(id);
-
-        if (!userResult.isPresent()) {
-            throw new UserDoesNotExistException(String.format("The user with id '%s' does not exist", id));
-        }
-
-        return userResult.get();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserDoesNotExistException(String.format("The user with id '%s' does not exist", id)));
     }
 
     public List<User> fetchAllUsers() {
@@ -46,9 +40,9 @@ public class UserService {
     }
 
     public void deleteUser(String id) throws UserDoesNotExistException {
-        fetchUserById(id);
+        User user = fetchUserById(id);
 
-        userRepository.deleteById(id);
+        userRepository.delete(user);
     }
 
 }

@@ -131,7 +131,7 @@ public class UserServiceTest {
 
         userService.deleteUser("userId");
 
-        verify(userRepositoryMock, times(1)).deleteById("userId");
+        verify(userRepositoryMock, times(1)).delete(user);
     }
 
     @Test(expected = UserDoesNotExistException.class)
@@ -140,7 +140,7 @@ public class UserServiceTest {
 
         userService.deleteUser("userId");
 
-        verify(userRepositoryMock, times(0)).deleteById("userId");
+        verify(userRepositoryMock, times(0)).delete(user);
     }
 
 }

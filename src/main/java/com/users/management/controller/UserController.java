@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/user/{id}", produces = "application/json")
-    public  ResponseEntity<UserDTO> fetchUser(@PathVariable String id) throws UserDoesNotExistException {
+    public ResponseEntity<UserDTO> fetchUser(@PathVariable String id) throws UserDoesNotExistException {
         User user = userService.fetchUserById(id);
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/user", produces = "application/json")
-    public  ResponseEntity<List<UserDTO>> fetchAllUsers() {
+    public ResponseEntity<List<UserDTO>> fetchAllUsers() {
         List<User> userList = userService.fetchAllUsers();
         List<UserDTO> userDTOList = new ArrayList<>();
 
@@ -69,12 +69,11 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/user/{id}", produces = "application/json")
-    public  ResponseEntity<Object> deleteUser(@PathVariable String id) throws UserDoesNotExistException {
+    public ResponseEntity<Object> deleteUser(@PathVariable String id) throws UserDoesNotExistException {
         userService.deleteUser(id);
 
         return ResponseEntity.noContent().build();
     }
-
 
 
 }

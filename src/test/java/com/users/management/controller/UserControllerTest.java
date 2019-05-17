@@ -1,7 +1,6 @@
-package com.users.management;
+package com.users.management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.users.management.controller.UserController;
 import com.users.management.dto.UserDTO;
 import com.users.management.exception.UserDoesNotExistException;
 import com.users.management.model.User;
@@ -22,12 +21,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.hasValue;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -53,15 +50,15 @@ public class UserControllerTest {
     @Before
     public void setup() {
         objectMapper = new ObjectMapper();
-
         user = new User();
+        userDTO = new UserDTO();
+
         user.setId("userId");
         user.setFirstName("firstName");
         user.setLastName("lastName");
         user.setEmailAddress("valid@email.address");
         user.setDateOfBirth(LocalDate.of(2000, 1, 1));
 
-        userDTO = new UserDTO();
         userDTO.setFirstName("firstName");
         userDTO.setLastName("lastName");
         userDTO.setEmailAddress("valid@email.address");
@@ -70,7 +67,7 @@ public class UserControllerTest {
 
     @Test
     public void givenValidUser_whenCreateUser_thenReturnCreatedUser() throws Exception {
-        when(userServiceMock.createUser(any(User.class))).thenReturn(user);
+        given(userServiceMock.createUser(any(User.class))).willReturn(user);
 
         mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -82,9 +79,7 @@ public class UserControllerTest {
 
     @Test
     public void givenUserWithDuplicateEmail_whenCreateUser_thenReturnBadRequest() throws Exception {
-        userDTO.setEmailAddress("invalidemail.address");
-
-        when(userServiceMock.createUser(any(User.class))).thenThrow(new DuplicateKeyException("index: emailAddress dup"));
+        given(userServiceMock.createUser(any(User.class))).willThrow(new DuplicateKeyException("index: emailAddress dup"));
 
         mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +92,7 @@ public class UserControllerTest {
         userDTO.setEmailAddress("invalidemailaddress");
         userDTO.setId("userId");
 
-        when(userServiceMock.createUser(any(User.class))).thenReturn(user);
+        given(userServiceMock.createUser(any(User.class))).willReturn(user);
 
         mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +114,7 @@ public class UserControllerTest {
     public void givenExistingUserId_whenFetchUser_thenReturnUser() throws Exception {
         userDTO.setId("userId");
 
-        when(userServiceMock.fetchUserById("userId")).thenReturn(user);
+        given(userServiceMock.fetchUserById("userId")).willReturn(user);
 
         mockMvc.perform(get("/user/userId")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -129,7 +124,7 @@ public class UserControllerTest {
 
     @Test
     public void givenNonExistingUserId_whenFetchUser_thenReturnNotFound() throws Exception {
-        when(userServiceMock.fetchUserById(anyString())).thenThrow(new UserDoesNotExistException(""));
+        given(userServiceMock.fetchUserById(anyString())).willThrow(new UserDoesNotExistException(""));
 
         mockMvc.perform(get("/user/userId")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -140,7 +135,7 @@ public class UserControllerTest {
     public void whenFetchAllUsers_thenReturnListOfUsers() throws Exception {
         userDTO.setId("userId");
 
-        when(userServiceMock.fetchAllUsers()).thenReturn(Collections.singletonList(user));
+        given(userServiceMock.fetchAllUsers()).willReturn(Collections.singletonList(user));
 
         mockMvc.perform(get("/user")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -152,7 +147,7 @@ public class UserControllerTest {
     public void givenValidUserAndUserId_whenEditUser_thenReturnUpdatedUser() throws Exception {
         userDTO.setId("userId");
 
-        when(userServiceMock.editUser(anyString(), any(User.class))).thenReturn(user);
+        given(userServiceMock.editUser(anyString(), any(User.class))).willReturn(user);
 
         mockMvc.perform(put("/user/userId")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -163,7 +158,7 @@ public class UserControllerTest {
 
     @Test
     public void givenValidUserAndInvalidUserId_whenEditUser_thenReturnBadRequest() throws Exception {
-        when(userServiceMock.editUser(anyString(), any(User.class))).thenThrow(new UserDoesNotExistException(""));
+        given(userServiceMock.editUser(anyString(), any(User.class))).willThrow(new UserDoesNotExistException(""));
 
         mockMvc.perform(put("/user/userId")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -193,9 +188,7 @@ public class UserControllerTest {
 
     @Test
     public void givenExistingEmailUserAndValidUserId_whenEditUser_thenReturnBadRequest() throws Exception {
-        userDTO.setDateOfBirth(LocalDate.of(2100, 1, 1));
-
-        when(userServiceMock.editUser(anyString(), any(User.class))).thenThrow(new DuplicateKeyException("index: emailAddress dup"));
+        given(userServiceMock.editUser(anyString(), any(User.class))).willThrow(new DuplicateKeyException("index: emailAddress dup"));
 
         mockMvc.perform(put("/user/userId")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -205,8 +198,6 @@ public class UserControllerTest {
 
     @Test
     public void givenExistingUserId_whenDeleteUser_thenReturnNoContent() throws Exception {
-        userDTO.setDateOfBirth(LocalDate.of(2100, 1, 1));
-
         mockMvc.perform(delete("/user/userId")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -214,8 +205,6 @@ public class UserControllerTest {
 
     @Test
     public void givenNonExistingUserId_whenDeleteUser_thenReturnBadRequest() throws Exception {
-        userDTO.setDateOfBirth(LocalDate.of(2100, 1, 1));
-
         doThrow(new UserDoesNotExistException("")).when(userServiceMock).deleteUser(anyString());
 
         mockMvc.perform(delete("/user/userId")

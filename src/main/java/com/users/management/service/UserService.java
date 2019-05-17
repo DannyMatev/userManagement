@@ -3,7 +3,6 @@ package com.users.management.service;
 import com.users.management.exception.UserDoesNotExistException;
 import com.users.management.model.User;
 import com.users.management.repository.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,22 +38,15 @@ public class UserService {
     }
 
     public User editUser(String id, User updatedUser) throws UserDoesNotExistException {
-        Optional<User> userResult = userRepository.findById(id);
+        User existingUser = fetchUserById(id);
 
-        if (!userResult.isPresent()) {
-            throw new UserDoesNotExistException(String.format("The user with id '%s' does not exist", id));
-
-        }
+        updatedUser.setId(existingUser.getId());
 
         return userRepository.save(updatedUser);
     }
 
     public void deleteUser(String id) throws UserDoesNotExistException {
-        Optional<User> userResult = userRepository.findById(id);
-
-        if (!userResult.isPresent()) {
-            throw new UserDoesNotExistException(String.format("The user with id '%s' does not exist", id));
-        }
+        fetchUserById(id);
 
         userRepository.deleteById(id);
     }
